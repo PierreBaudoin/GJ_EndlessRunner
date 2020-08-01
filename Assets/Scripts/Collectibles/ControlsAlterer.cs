@@ -21,5 +21,7 @@ public class ControlsAlterer : MonoBehaviour, ICollectible
         GameManager.instance.controler.AddNextInput(key);        
 
         GameManager.instance.points ++;
+
+        Destroy(this.gameObject);
     }
 }

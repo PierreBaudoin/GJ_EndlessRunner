@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Controler : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class Controler : MonoBehaviour
     public Dictionary<direction, string> inputs, nextInput;
     
     public List<string> validKeys;
+
+    public TextMeshProUGUI t_left, t_right, t_nextLeft, t_nextRight;
 
     void Start()
     {
@@ -76,7 +79,12 @@ public class Controler : MonoBehaviour
         
         // L'ajouter à au dictionnaire
         nextInput[d] = key;
-        print("next  : " + d + " ++ " + key);
+
+        // Adapter l'UI
+        if(d == direction.right)
+            t_nextRight.text = key;
+        if(d == direction.left)
+            t_nextLeft.text = key;
 
         if(IsNextInputReady())
             AllImputGathered();
@@ -87,17 +95,25 @@ public class Controler : MonoBehaviour
     public void AllImputGathered(){
         foreach(direction d in new List<direction>(inputs.Keys)){
             string oldKey = inputs[d];
-            inputs[d] = nextInput[d];
-            nextInput[d] = "";
+            if(d == direction.left || d == direction.right){
+                inputs[d] = nextInput[d];
+                nextInput[d] = "";
+            }
 
             if(oldKey != "up" && oldKey != "down" && oldKey != "left" && oldKey != "right"){
                 GameManager.instance.controler.validKeys.Add(oldKey);
             }
+
+            t_left.text = inputs[direction.left];
+            t_right.text = inputs[direction.right];
+
+            t_nextLeft.text = "";
+            t_nextRight.text = "";
         }
     }
 
     private Controler.direction GetRandomDirection(List<string> usedDirection){
-        int rand = Random.Range(0,4);
+        int rand = Random.Range(2,4);
         if(usedDirection[rand] != "")
             return GetRandomDirection(usedDirection);
 
@@ -117,7 +133,7 @@ public class Controler : MonoBehaviour
 
     private bool IsNextInputReady(){
         foreach(direction d in nextInput.Keys)
-            if(nextInput[d] == "")
+            if(nextInput[d] == "" && ( d == direction.left || d == direction.right))
                 return false;
         
         return true;
